@@ -1,34 +1,27 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+import {readFileSync} from "fs";
+import {ApolloServer} from 'apollo-server-express'
+import express, {Application} from 'express'
+import {resolvers} from './graphql'
+
 require('dotenv').config();
 
-import express from 'express'
-import {equipments} from './database/equipments'
-import bodyParser from "body-parser";
+const typeDefs = readFileSync('src/graphql/schema.graphql', 'utf-8')
 
-const app = express()
-app.use(bodyParser.json())
+const main = async (app : Application) => {
 
-app.get('/', (_req, res) => {
-    res.send('Hello world')
-})
+    const server = new ApolloServer({typeDefs, resolvers})
 
-app.get('/equipments', (_req, res) => {
-    res.send(equipments)
-})
+    server.applyMiddleware({app, path: '/api'})
 
-app.post('/delete-equip', (req, res) => {
-    const id: string = req.body.id
+    app.listen(process.env.PORT)
 
-    for (let i = 0; i < equipments.length; i++) {
-        if (equipments[i].id === id) {
-            return res.send(equipments.splice(i, 1))
-        }
-    }
+    console.log(`[app]: http://localhost:${process.env.PORT}`)
+}
 
-    return res.send('hello world')
-})
+main(express())
 
 
-app.listen(process.env.PORT)
 
-console.log(`[app]: http://localhost:${process.env.PORT}`)
+
+

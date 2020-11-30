@@ -1,0 +1,13 @@
+type Equipment {
+    id: String!
+    name: String!
+    model: String!
+}
+
+type Query {
+    equipments: String
+}
+
+type Mutation {
+    deleteEquipments: String
+}
