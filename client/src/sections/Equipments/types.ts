@@ -1,4 +1,4 @@
-type Equipment = {
+export type Equipment = {
     id: string
     number: string
     name: string

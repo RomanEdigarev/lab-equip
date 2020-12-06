@@ -1,7 +1,7 @@
 import * as React from "react";
-import {FC} from "react";
-import {server} from '../../lib/api'
-import {EquipmentsData, DeletingData, DeletingVariables} from './types'
+import {FC, useState, useEffect} from "react";
+import {server, useQuery} from '../../lib/api'
+import {EquipmentsData, DeletingData, DeletingVariables, Equipment} from './types'
 
 const EQUIPMENTS = `
     query Equipments {
@@ -32,23 +32,35 @@ type Props = {
     number?: string
 }
 
-export const Equipments : FC<Props> = ({name}) => {
+export const Equipments: FC<Props> = ({name}) => {
+    const {data} = useQuery<EquipmentsData>(EQUIPMENTS)
 
-    const fetchEquipments = async () => {
-        const {data} = await server.graphqlAPI<EquipmentsData>({query: EQUIPMENTS})
-        console.log(data.equipments)
+    const deletingEquipment = async (id: string) => {
+        const {data} = await server.graphqlAPI<DeletingData, DeletingVariables>({
+            query: DELETE_EQUIPMENT,
+            variables: {id}
+        })
+
     }
 
-    const deletingEquipment = async () => {
-        const {data} = await server.graphqlAPI<DeletingData, DeletingVariables>({query:DELETE_EQUIPMENT, variables:{id:'5fc9f92db68e9a0f7022eb68'}})
-        console.log(data)
-    }
+    const equipments = data?.equipments
+
+    const equipmentsList =
+        <ul>
+            {equipments?.map(equip => {
+                return (
+                    <li key={equip.id}>
+                        {equip.name + ' ' + equip.model}
+                        <button onClick={() => deletingEquipment(equip.id)}> Delete</button>
+                    </li>
+                )
+            })}
+        </ul>
 
     return (
         <div>
             <h2>{name}</h2>
-            <button onClick={fetchEquipments}>Query Equipments!</button>
-            <button onClick={deletingEquipment}>Delete Equipment</button>
+            {equipmentsList}
         </div>
     );
 };

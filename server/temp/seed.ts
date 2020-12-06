@@ -14,7 +14,26 @@ const seed = async () => {
                 number: 1,
                 name: 'Анализатор жидкости кондуктометр',
                 model: 'АНИОН-4120',
+            },
+            {
+                _id: new ObjectId(),
+                number: 2,
+                name: 'Анализатор жидкости кондуктометр',
+                model: 'SevenCompact S230',
+            },
+            {
+                _id: new ObjectId(),
+                number: 3,
+                name: 'Анализатор жидкости рН-метр',
+                model: 'FiveEasy Plus FP20',
+            },
+            {
+                _id: new ObjectId(),
+                number: 4,
+                name: 'Анализатор общего углерода',
+                model: 'TOC-L CSN',
             }
+
         ]
 
         for (const equip of equipments) {
