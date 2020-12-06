@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
+import {Equipments} from './sections'
 
 ReactDOM.render(
   <React.StrictMode>
-      <h1>Hello world</h1>
+      <Equipments name={'asd'}/>
   </React.StrictMode>,
   document.getElementById('root')
 );
