@@ -7,7 +7,7 @@ import {Database, Equipment} from "../../../lib/types";
 export const equipResolvers: IResolvers = {
     Query : {
         equipments: async (_root: undefined, _args: {}, {db} : {db: Database}): Promise<Equipment[]> => {
-            return await db.equipments.find({}).toArray()
+             return await db.equipments.find({}).toArray()
         }
     },
     Mutation: {

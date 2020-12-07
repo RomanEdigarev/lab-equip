@@ -1,24 +1,41 @@
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {server} from "./server";
 
 type State<TData> = {
-    data: TData | null
+    data: TData | null,
+    loading: boolean,
+    error: boolean
 }
 
+type QueryResult<TData> = State<TData> & {refetch : () => void}
 
-export const useQuery = <TData>(query: string) => {
-    const [state, setState] = useState<State<TData>>({data: null})
+export const useQuery = <TData>(query: string) : QueryResult<TData> => {
+    const [state, setState] = useState<State<TData>>({data: null, loading: false, error: false})
 
-    useEffect(() => {
+    const fetch = useCallback(() => {
         const fetchAPI = async () => {
-            const {data} = await server.graphqlAPI<TData>({query})
-            setState({data})
+            try {
+                setState({data: null, loading: true, error: false})
+                const {data, errors} = await server.graphqlAPI<TData>({query})
+                setState({data, loading: false, error: false})
+
+                if(errors && errors.length) {
+                    throw new Error(errors[0].message)
+                }
+
+            } catch (e) {
+                setState({data: null, loading: false, error: true})
+                throw console.error(e)
+            }
+            
         }
-
         fetchAPI()
-
     }, [query])
 
-    return state
+    useEffect(() => {
+        fetch()
+    }, [fetch])
+
+    return {...state, refetch: fetch}
 
 }

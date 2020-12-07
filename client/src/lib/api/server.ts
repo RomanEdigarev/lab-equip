@@ -4,6 +4,10 @@ type Body<TVariables> = {
     variables? : TVariables
 }
 
+type Error = {
+    message: string
+}
+
 export const server = {
     graphqlAPI: async <TData = any, TVariables = any>(body: Body<TVariables>) => {
         const res = await fetch('/api', {
@@ -14,6 +18,10 @@ export const server = {
             body: JSON.stringify(body)
         })
 
-        return res.json() as Promise<{data: TData}>
+        if (!res.ok) {
+            throw new Error('failed fetch from server')
+        }
+
+        return res.json() as Promise<{data: TData, errors: Error[]}>
     }
 }

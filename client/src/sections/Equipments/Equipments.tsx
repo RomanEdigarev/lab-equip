@@ -1,7 +1,7 @@
 import * as React from "react";
-import {FC, useState, useEffect} from "react";
-import {server, useQuery} from '../../lib/api'
-import {EquipmentsData, DeletingData, DeletingVariables, Equipment} from './types'
+import {FC} from "react";
+import {server, useQuery, useMutation  } from '../../lib/api'
+import {DeletingData, DeletingVariables, EquipmentsData} from './types'
 
 const EQUIPMENTS = `
     query Equipments {
@@ -33,14 +33,12 @@ type Props = {
 }
 
 export const Equipments: FC<Props> = ({name}) => {
-    const {data} = useQuery<EquipmentsData>(EQUIPMENTS)
+    const {data, refetch, loading, error} = useQuery<EquipmentsData>(EQUIPMENTS)
+    const [deletingEquipment, {loading: deleteLoading, error: deleteError}] = useMutation<DeletingData, DeletingVariables>(DELETE_EQUIPMENT)
 
-    const deletingEquipment = async (id: string) => {
-        const {data} = await server.graphqlAPI<DeletingData, DeletingVariables>({
-            query: DELETE_EQUIPMENT,
-            variables: {id}
-        })
-
+    const handleDeletingEquipment = async (id: string) => {
+        await deletingEquipment({id})
+        refetch()
     }
 
     const equipments = data?.equipments
@@ -51,16 +49,29 @@ export const Equipments: FC<Props> = ({name}) => {
                 return (
                     <li key={equip.id}>
                         {equip.name + ' ' + equip.model}
-                        <button onClick={() => deletingEquipment(equip.id)}> Delete</button>
+                        <button onClick={() => handleDeletingEquipment(equip.id)}> Delete</button>
                     </li>
                 )
             })}
         </ul>
 
+    if (loading) {
+        return <h2>Loading</h2>
+    }
+    if (error) {
+        return <h2>ERROR!</h2>
+    }
+
+    const deleteLoadingInProcess = deleteLoading ? <h2>Deleting Equipment in process...</h2>: null
+    const deletingErrorMessage = deleteError ? <h2>Oh! Deleting crashed with error, try again later</h2>: null
+
+
     return (
         <div>
             <h2>{name}</h2>
             {equipmentsList}
+            {deleteLoadingInProcess}
+            {deletingErrorMessage}
         </div>
     );
 };
