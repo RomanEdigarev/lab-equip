@@ -1,12 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import ApolloClient from 'apollo-boost'
+import {ApolloProvider} from 'react-apollo'
 import reportWebVitals from './reportWebVitals';
 import {Equipments} from './sections'
 
+const client = new ApolloClient({uri: '/api'})
+
 ReactDOM.render(
-  <React.StrictMode>
+  <ApolloProvider client={client}>
       <Equipments name={'asd'}/>
-  </React.StrictMode>,
+  </ApolloProvider>,
   document.getElementById('root')
 );
 
