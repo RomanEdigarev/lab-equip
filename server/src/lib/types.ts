@@ -47,7 +47,10 @@ export type User = {
 
 export type Booking = {
     _id: ObjectId
-
+    equipment: ObjectId,
+    tenant: string,
+    checkIn: string,
+    checkOut: string
 }
 
 export type Database = {
