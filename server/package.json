@@ -1,5 +1,5 @@
 {
-  "name": "tinyhouse-v1-server",
+  "name": "lab_equip-server",
   "version": "0.1.0",
   "dependencies": {
     "@types/lodash.merge": "^4.6.6",
