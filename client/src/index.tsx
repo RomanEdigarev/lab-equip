@@ -4,12 +4,13 @@ import ApolloClient from 'apollo-boost'
 import {ApolloProvider} from 'react-apollo'
 import reportWebVitals from './reportWebVitals';
 import {Equipments} from './sections'
+import './styles/index.css'
 
 const client = new ApolloClient({uri: '/api'})
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-      <Equipments name={'asd'}/>
+      <Equipments name={'Equipments'}/>
   </ApolloProvider>,
   document.getElementById('root')
 );

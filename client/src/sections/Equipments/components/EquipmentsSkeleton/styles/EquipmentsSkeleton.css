@@ -1,0 +1,12 @@
+.equipments_skeleton .ant-divider-horizontal {
+    margin: 12px 0;
+}
+
+.equipments_skeleton .ant-skeleton-content .ant-skeleton-title + .ant-skeleton-paragraph {
+    margin-top: 12px;
+}
+
+.equipments-skeleton__alert  {
+    max-width: 450px;
+    margin: 10px;
+}

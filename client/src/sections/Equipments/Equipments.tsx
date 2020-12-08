@@ -1,8 +1,11 @@
 import * as React from "react";
 import {FC} from "react";
-import { useQuery, useMutation  } from 'react-apollo'
+import {useMutation, useQuery} from 'react-apollo'
 import {gql} from 'apollo-boost'
 import {DeletingData, DeletingVariables, EquipmentsData} from './types'
+import {Alert, Avatar, Button, List, Spin} from 'antd'
+import {EquipmentsSkeleton} from './components'
+import './styles/Equipments.css'
 
 const EQUIPMENTS = gql`
     query Equipments {
@@ -44,35 +47,45 @@ export const Equipments: FC<Props> = ({name}) => {
 
     const equipments = data?.equipments
 
-    const equipmentsList =
-        <ul>
-            {equipments?.map(equip => {
-                return (
-                    <li key={equip.id}>
-                        {equip.name + ' ' + equip.model}
-                        <button onClick={() => handleDeletingEquipment(equip.id)}> Delete</button>
-                    </li>
-                )
-            })}
-        </ul>
+    const equipmentsList = equipments ?
+        <List itemLayout={'horizontal'}
+              dataSource={equipments}
+              renderItem={equipment => (
+                  <List.Item actions={[
+                      <Button type={'primary'} onClick={() => handleDeletingEquipment(equipment.id)}>
+                          Delete
+                      </Button>
+                  ]}>
+                      <List.Item.Meta title={equipment.name}
+                                      description={equipment.model}
+                                      avatar={<Avatar
+                                          src={'https://cdn1.iconfinder.com/data/icons/education-vol-2-18/32/30-512.png'}
+                                          size={48}/>}
+                      />
+                  </List.Item>
+              )}
+        > </List>
+        : null
+
 
     if (loading) {
-        return <h2>Loading</h2>
-    }
-    if (error) {
-        return <h2>ERROR!</h2>
+        return <div><EquipmentsSkeleton title={name}/></div>
     }
 
-    const deleteLoadingInProcess = deleteLoading ? <h2>Deleting Equipment in process...</h2>: null
-    const deletingErrorMessage = deleteError ? <h2>Oh! Deleting crashed with error, try again later</h2>: null
+    if (error) {
+        return <div><EquipmentsSkeleton title={name} error/></div>
+    }
+
+    const deletingErrorAlert = deleteError ? <Alert type={'error'} message={'Oh! Deleting crashed with error, try again later'}/> : null
 
 
     return (
-        <div>
-            <h2>{name}</h2>
-            {equipmentsList}
-            {deleteLoadingInProcess}
-            {deletingErrorMessage}
+        <div className={'equipments'}>
+            <Spin spinning={deleteLoading}>
+                <h2>{name}</h2>
+                {deletingErrorAlert}
+                {equipmentsList}
+            </Spin>
         </div>
     );
 };
