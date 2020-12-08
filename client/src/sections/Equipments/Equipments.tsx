@@ -1,9 +1,10 @@
 import * as React from "react";
 import {FC} from "react";
-import {server, useQuery, useMutation  } from '../../lib/api'
+import { useQuery, useMutation  } from 'react-apollo'
+import {gql} from 'apollo-boost'
 import {DeletingData, DeletingVariables, EquipmentsData} from './types'
 
-const EQUIPMENTS = `
+const EQUIPMENTS = gql`
     query Equipments {
         equipments {
             id
@@ -15,7 +16,7 @@ const EQUIPMENTS = `
 
 `
 
-const DELETE_EQUIPMENT = `
+const DELETE_EQUIPMENT = gql`
     mutation DeleteEquipment($id: String!) {
         deleteEquipments(id: $id) {
             id
@@ -37,7 +38,7 @@ export const Equipments: FC<Props> = ({name}) => {
     const [deletingEquipment, {loading: deleteLoading, error: deleteError}] = useMutation<DeletingData, DeletingVariables>(DELETE_EQUIPMENT)
 
     const handleDeletingEquipment = async (id: string) => {
-        await deletingEquipment({id})
+        await deletingEquipment({variables: {id}})
         refetch()
     }
 
