@@ -1,11 +1,11 @@
 import {readFileSync} from "fs";
 import {ApolloServer} from 'apollo-server-express'
 import express, {Application} from 'express'
-import {resolvers} from './graphql'
+import {resolvers} from './graphql_old'
 import {connectionDataBase} from "./database";
 
 
-const typeDefs = readFileSync('src/graphql/schema.graphql', 'utf-8')
+const typeDefs = readFileSync('src/graphql_old/schema.graphql_old', 'utf-8')
 
 const main = async (app: Application) => {
 

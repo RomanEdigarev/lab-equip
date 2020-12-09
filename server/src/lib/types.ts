@@ -1,10 +1,6 @@
 import {ObjectId, Collection} from 'mongodb'
 
-enum EquipmentType {
-    "СИ",
-    "ВО",
-    "ИО"
-}
+export type EquipmentType = 'СИ' | 'ИО' | 'ВО'
 
 type BookingsIndexMonth = {
     [key: string]: boolean
@@ -20,6 +16,7 @@ type BookingsIndex = {
 
 export type Equipment = {
     _id: ObjectId
+    number: string
     name: string
     model: string
     description: string
@@ -40,7 +37,7 @@ export type User = {
     position: string
     contact: string
     walletId?: string
-    income: string
+    income: number
     bookings: ObjectId[]
     equipments: ObjectId[]
 }

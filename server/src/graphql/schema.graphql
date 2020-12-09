@@ -1,14 +1,12 @@
 type Equipment {
-    id: String!
-    number: Int!
-    name: String!
-    model: String!
+
 }
 
 type Query {
-    equipments: [Equipment!]!
+    auth: String!
 }
 
 type Mutation {
-    deleteEquipments(id: String!): Equipment!
+    logIn: String!,
+    logOut: String!
 }
