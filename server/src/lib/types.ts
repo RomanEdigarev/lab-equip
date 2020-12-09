@@ -1,5 +1,13 @@
 import {ObjectId, Collection} from 'mongodb'
 
+export type Viewer = {
+    _id?: string,
+    token?: string,
+    avatar?: string,
+    walletId?: string,
+    didRequest: boolean
+}
+
 export type EquipmentType = 'СИ' | 'ИО' | 'ВО'
 
 type BookingsIndexMonth = {
@@ -34,7 +42,7 @@ export type User = {
     token: string
     name: string
     avatar: string
-    position: string
+    position?: string
     contact: string
     walletId?: string
     income: number
