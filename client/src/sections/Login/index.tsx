@@ -1,11 +1,57 @@
 import * as React from 'react';
+import {FC, useEffect, useRef} from 'react';
 import googleLogo from './assets/google_logo.jpg'
 import {Card, Layout, Typography} from "antd";
+import {useApolloClient} from '@apollo/react-hooks'
+import {Viewer} from "../../lib/types";
+import {AUTH_URL} from "../../graphql/query";
+import {AuthUrl} from "../../graphql/query/AuthUrl/types";
+import {useMutation} from "react-apollo";
+import {LogInData, LogInVariables} from "../../graphql/mutations/types";
+import {LOG_IN} from "../../graphql/mutations/LogIn";
+
 
 const {Content} = Layout
 const {Title, Text} = Typography
 
-export const Login = () => {
+type Props = {
+    setViewer: (viewer: Viewer) => void
+}
+
+export const Login : FC<Props>= ({setViewer}) => {
+    const client = useApolloClient()
+    const [logIn, {data, loading, error}] = useMutation<LogInData, LogInVariables>(LOG_IN,{
+        onCompleted: (data) => {
+            if(data?.logIn) {
+                setViewer(data.logIn)
+            }
+        }
+    })
+    const logInRef = useRef(logIn)
+
+    useEffect(() => {
+        const code = new URL(window.location.href).searchParams.get('code')
+        if(code) {
+            logInRef.current({
+                variables: {input:{code}}
+            })
+        }
+    }, [])
+
+    const handleAuth = async () => {
+        try {
+            const {data} = await client.query<AuthUrl>({
+                query: AUTH_URL
+            })
+            window.location.href = data.auth
+        } catch (e) {
+            throw new Error(e)
+        }
+    }
+
+
+
+
     return (
         <Content className={'log-in'}>
             <Card className={'log-in-card'}>
@@ -20,7 +66,7 @@ export const Login = () => {
                     </Title>
                     <Text>Войдите с помощью аккаунта Google</Text>
                 </div>
-                <button className={'log-in-card__google-button'}>
+                <button className={'log-in-card__google-button'} onClick={() => handleAuth()}>
                     <img className={'log-in-card__google-button-logo'} src={googleLogo} alt="Google logo"/>
                     <span className={'log-in-card__google-button-text'}>
                         Вход с Google
