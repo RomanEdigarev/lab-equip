@@ -6,11 +6,11 @@ import {ApolloProvider} from 'react-apollo'
 import {Layout} from 'antd'
 import {Viewer} from './lib/types'
 import reportWebVitals from './reportWebVitals';
-import {Home, Host, Equipment, User, NotFound, Equipments, Login} from './sections'
+import {Home, Host, Equipment, User, NotFound, Equipments, Login, AppHeader} from './sections'
 import './styles/index.css'
 
 const client = new ApolloClient({uri: '/api'})
-const initialViewer : Viewer = {
+const initialViewer: Viewer = {
     didRequest: false,
     _id: null,
     avatar: null,
@@ -23,8 +23,9 @@ const App = () => {
     console.log(viewer)
 
     return (
-        <Layout id={'app'}>
-            <Router>
+        <Router>
+            <Layout id={'app'}>
+                <AppHeader/>
                 <Switch>
                     <Route exact path={'/'}><Home/></Route>
                     <Route exact path={'/host'}><Host/></Route>
@@ -34,8 +35,8 @@ const App = () => {
                     <Route exact path={'/user/:id'}><User/></Route>
                     <Route><NotFound/></Route>
                 </Switch>
-            </Router>
-        </Layout>
+            </Layout>
+        </Router>
     )
 }
 

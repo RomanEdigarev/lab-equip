@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {FC, useEffect, useRef} from 'react';
 import googleLogo from './assets/google_logo.jpg'
-import {Card, Layout, Typography} from "antd";
+import {Card, Layout, Typography, Spin} from "antd";
 import {useApolloClient} from '@apollo/react-hooks'
 import {Viewer} from "../../lib/types";
 import {AUTH_URL} from "../../graphql/query";
@@ -9,6 +9,9 @@ import {AuthUrl} from "../../graphql/query/AuthUrl/types";
 import {useMutation} from "react-apollo";
 import {LogInData, LogInVariables} from "../../graphql/mutations/types";
 import {LOG_IN} from "../../graphql/mutations/LogIn";
+import {ErrorBanner} from "../../lib/components/ErrorBanner";
+import {displayErrorMessage, displaySuccessNotification} from "../../lib/components/utils";
+import { Redirect } from 'react-router-dom';
 
 
 const {Content} = Layout
@@ -18,12 +21,13 @@ type Props = {
     setViewer: (viewer: Viewer) => void
 }
 
-export const Login : FC<Props>= ({setViewer}) => {
+export const Login: FC<Props> = ({setViewer}) => {
     const client = useApolloClient()
-    const [logIn, {data, loading, error}] = useMutation<LogInData, LogInVariables>(LOG_IN,{
+    const [logIn, {data, loading, error}] = useMutation<LogInData, LogInVariables>(LOG_IN, {
         onCompleted: (data) => {
-            if(data?.logIn) {
+            if (data?.logIn) {
                 setViewer(data.logIn)
+                displaySuccessNotification('Добро пожаловать в Lab Equip')
             }
         }
     })
@@ -31,9 +35,9 @@ export const Login : FC<Props>= ({setViewer}) => {
 
     useEffect(() => {
         const code = new URL(window.location.href).searchParams.get('code')
-        if(code) {
+        if (code) {
             logInRef.current({
-                variables: {input:{code}}
+                variables: {input: {code}}
             })
         }
     }, [])
@@ -45,11 +49,34 @@ export const Login : FC<Props>= ({setViewer}) => {
             })
             window.location.href = data.auth
         } catch (e) {
-            throw new Error(e)
+            displayErrorMessage('Ошибка попробуйте позже')
         }
     }
 
+    if (loading) {
+        return (
+            <Content className={'log-in'}>
+                <Spin size={'large'} tip={'Logging you in'}>
+                </Spin>
+            </Content>
 
+        )
+    }
+
+    if (error) {
+        return (
+            <Content className={'log-in'}>
+                <ErrorBanner/>
+            </Content>
+        )
+    }
+
+    if (data?.logIn) {
+        const viewer = data.logIn._id
+        return (
+            <Redirect to={`/user/${viewer}`}/>
+        )
+    }
 
 
     return (
