@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import ApolloClient from 'apollo-boost'
 import {ApolloProvider} from 'react-apollo'
-import {Layout} from 'antd'
+import {Affix, Layout} from 'antd'
 import {Viewer} from './lib/types'
 import reportWebVitals from './reportWebVitals';
 import {Home, Host, Equipment, User, NotFound, Equipments, Login, AppHeader} from './sections'
@@ -12,7 +12,7 @@ import './styles/index.css'
 const client = new ApolloClient({uri: '/api'})
 const initialViewer: Viewer = {
     didRequest: false,
-    _id: null,
+    id: null,
     avatar: null,
     hasWallet: false,
     token: null
@@ -25,7 +25,9 @@ const App = () => {
     return (
         <Router>
             <Layout id={'app'}>
-                <AppHeader/>
+                <Affix offsetTop={0} className={'app__affix-header'}>
+                    <AppHeader viewer={viewer} setViewer={setViewer}/>
+                </Affix>
                 <Switch>
                     <Route exact path={'/'}><Home/></Route>
                     <Route exact path={'/host'}><Host/></Route>

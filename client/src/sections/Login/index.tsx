@@ -72,7 +72,7 @@ export const Login: FC<Props> = ({setViewer}) => {
     }
 
     if (data?.logIn) {
-        const viewer = data.logIn._id
+        const viewer = data.logIn.id
         return (
             <Redirect to={`/user/${viewer}`}/>
         )

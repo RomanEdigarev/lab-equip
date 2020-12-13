@@ -1,12 +1,20 @@
 require('dotenv').config();
 
 import crypto from 'crypto'
+import {Response, Request} from 'express'
 import {Database, User, Viewer} from "../../../lib/types";
 import {IResolvers} from 'apollo-server-express'
 import {Google} from "../../../lib/api";
 import {LoginArgs} from "./types";
 
-const logInViaGoogle = async (code: string, token: string, db: Database): Promise<User> => {
+const cookieOptions = {
+    http: true,
+    sameSite: true,
+    signed: true,
+    secure: process.env.NODE_ENV !== 'development'
+}
+
+const logInViaGoogle = async (code: string, token: string, db: Database, res: Response): Promise<User> => {
     const {user} = await Google.logIn(code)
 
     if (!user) {
@@ -62,7 +70,31 @@ const logInViaGoogle = async (code: string, token: string, db: Database): Promis
         viewer = insertResult.ops[0]
     }
 
+    res.cookie('viewer', userId!, {
+        ...cookieOptions,
+        maxAge: 365 * 24 * 60 * 60 * 1000
+    })
+
     return viewer
+}
+
+const logInViaCookie = async (token: string, db: Database, req: Request, res: Response): Promise<User | undefined> => {
+    console.log('REQUEST' + req)
+
+    const updateRes = await db.users.findOneAndUpdate(
+        {_id: req.signedCookies.viewer},
+        {$set: {token}},
+        {returnOriginal: false}
+    )
+    console.log('RESPONSE' + res)
+    let viewer = updateRes.value
+    if(!viewer) {
+        res.clearCookie('viewer', cookieOptions)
+    }
+    console.log('UPDATERES' + updateRes)
+
+    return viewer
+
 }
 
 export const viewerResolver: IResolvers = {
@@ -76,11 +108,13 @@ export const viewerResolver: IResolvers = {
         }
     },
     Mutation: {
-        logIn: async (_root: undefined, {input}: LoginArgs, {db}: { db: Database }): Promise<Viewer> => {
+        logIn: async (_root: undefined, {input}: LoginArgs, {db, res, req}: { db: Database, res: Response, req: Request }): Promise<Viewer> => {
             try {
                 const code = input ? input.code : null
                 const token = crypto.randomBytes(16).toString("hex")
-                const viewer: User | undefined = code ? await logInViaGoogle(code, token, db) : undefined
+                const viewer: User | undefined = code ?
+                    await logInViaGoogle(code, token, db, res) :
+                    await logInViaCookie(token, db, req, res)
 
                 if (!viewer) {
                     return {didRequest: true}
@@ -97,8 +131,9 @@ export const viewerResolver: IResolvers = {
                 throw new Error(`Failed to log in ${e}`)
             }
         },
-        logOut: (): Viewer => {
+        logOut: (_root: undefined, _param: undefined, {res}): Viewer => {
             try {
+                res.clearCookie('viewer', cookieOptions)
                 return {didRequest: true}
             } catch (e) {
                 throw  new Error('Failed to log out')
