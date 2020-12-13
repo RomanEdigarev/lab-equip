@@ -79,19 +79,16 @@ const logInViaGoogle = async (code: string, token: string, db: Database, res: Re
 }
 
 const logInViaCookie = async (token: string, db: Database, req: Request, res: Response): Promise<User | undefined> => {
-    console.log('REQUEST' + req)
 
     const updateRes = await db.users.findOneAndUpdate(
         {_id: req.signedCookies.viewer},
         {$set: {token}},
         {returnOriginal: false}
     )
-    console.log('RESPONSE' + res)
     let viewer = updateRes.value
     if(!viewer) {
         res.clearCookie('viewer', cookieOptions)
     }
-    console.log('UPDATERES' + updateRes)
 
     return viewer
 
