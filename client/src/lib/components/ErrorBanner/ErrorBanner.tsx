@@ -8,7 +8,6 @@ type Props = {
 }
 
 
-
 export const ErrorBanner: FC<Props> = (
     {
         message = 'Ой, что-то пошло не так',
