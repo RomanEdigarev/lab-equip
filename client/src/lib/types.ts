@@ -5,3 +5,18 @@ export type Viewer = {
     hasWallet: boolean | null,
     didRequest: boolean
 }
+
+type User = {
+    id: string
+    name: string
+    avatar: string
+    contact: string
+}
+
+export type UserData = {
+    user: User
+}
+
+export type UserVariables = {
+    id: string
+}

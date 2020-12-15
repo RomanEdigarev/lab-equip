@@ -68,7 +68,7 @@ const App = () => {
                     <Route exact path={'/equipment/:id'}><Equipment/></Route>
                     <Route exact path={'/equipments/:location?'}><Equipments/></Route>
                     <Route exact path={'/login'}><Login setViewer={setViewer}/></Route>
-                    <Route exact path={'/user/:id'}><User/></Route>
+                    <Route exact path={'/user/:id'} render={props => <User {...props}/>}/>
                     <Route><NotFound/></Route>
                 </Switch>
             </Layout>
