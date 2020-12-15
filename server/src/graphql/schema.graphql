@@ -6,16 +6,58 @@ type Viewer {
     didRequest: Boolean!
 }
 
+type Booking {
+    id: ID!
+    equipment: Equipment!,
+    admin: User!,
+    checkIn: String!,
+    checkOut: String!
+}
+
+scalar EquipmentType
+type Equipment {
+    id: ID!
+    number: String!
+    name: String!
+    model: String!
+    description: String!
+    image: String!
+    type: EquipmentType
+    area: String!
+    admin: User!
+    bookings(limit: Int, page: Int): Bookings
+    bookingsIndex: String!
+}
+
+type Bookings {
+    total: Int!
+    result: [Booking!]!
+}
+
+type Equipments {
+    total: Int!
+    result: [Equipment!]!
+}
+
+type User {
+    id: ID!
+    name: String!
+    avatar: String!
+    contact: String!
+    hasWallet: Boolean
+    income: Int
+    bookigns(limit: Int!, page: Int!): Bookings
+    equipments(limit: Int!, page: Int!): Equipments!
+}
+
 input LogInInput {
     code: String!
 }
 
 type Query {
     auth: String!
-    user: String!
+    user(id: ID!): User!
 }
-
-
 
 type Mutation {
     logIn(input: LogInInput): Viewer!,
