@@ -12,6 +12,7 @@ input LogInInput {
 
 type Query {
     auth: String!
+    user: String!
 }
 
 
